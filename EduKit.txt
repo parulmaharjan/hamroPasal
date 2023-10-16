@@ -1,0 +1,1030 @@
+//status code
+//200- suceess ok server bata ke kura sucessfully return then 200
+//201- created for eg somebody creates ac in our web
+//204- no content -- req sucessful but no response
+//400- bad request -- req gayo server ma tara ke response ayena
+//401- unauthorized --part ma aceess
+//403- forbidden -- login xa tara authorsue xaina  
+//404- not found-- req couldnot be found
+//500- internal server error
+
+
+//express js-- nodejs framework
+//large scale ma api banauna... or lets say code concept lai ajai easy banuna we got express JS
+//latest waay
+import  express  from "express";
+import color from "colors";
+import { fileURLToPath }from "url";
+import{dirname , join} from "path"; 
+const app = express()
+
+const _filename = fileURLToPath(import.meta.url);
+const _dirname = dirname(_filename);
+
+app.get("/",(req,res)=>{
+    res.sendFile(join(_dirname, "index.html"));
+})
+app.post("/api/v1/register",(req,res)=>{
+    res.send("<h1>sucessfully</h1>");
+})
+
+const port = 5000;
+app.listen(port,()=>{
+    console.log(`server is running at port: http://localhost:${port}`.cyan.underline.bold);
+})
+
+6/13/2023
+
+app.get("/home", (req, res) => {
+    res.send({
+        name: "Ram",
+        age: 23,
+        isMarried: false
+
+    });
+});
+
+app.post("/add", (req, res) => {
+    const username = req.body.name;
+    const userEmail = req.body.email;
+    const usepassword = req.body.password;
+    res.status(201).json({
+        name: username,
+        email: userEmail,
+        password: usepassword
+    });
+});
+
+6/14/2023
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FORM</title>
+    <style>
+      body {
+        background-color: rgb(145, 164, 179);
+        margin: 0%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        width: 100vw;
+      }
+      form {
+        display: flex;
+        flex-direction: column;
+        height: 90vh;
+        border-radius: 5px;
+        width: 40vw;
+        background-color: white;
+        align-items: center;
+        justify-content: space-evenly;
+      }
+      form > h1 {
+        color: rgba(0, 0, 0, 0.644);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.644);
+        width: 10vw;
+        text-align: center;
+        padding-bottom: 1vmax;
+        font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+      }
+      form > input {
+        padding: 1vmax;
+        width: 30vw;
+        outline: none;
+        font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS",
+          sans-serif;
+        font-size: 1.3vmax;
+        border: none;a
+        border-bottom: 1px solid rgba(70, 70, 70, 0.5);
+      }
+      form > input[type="submit"] {
+        width: 20vw;
+        border: none;
+        cursor: pointer;
+        background-color: #EB4034;
+        color: white;
+        font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+          "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+        font-size: 1.4vmax;
+        transition: all 0.5s;
+      }
+      form > input[type="submit"]:hover {
+        background-color: #C4342A;
+      }
+    </style>
+  </head>
+  <body>
+    <form action="/api/v1/register" method="POST">
+      <h1>REGISTER</h1>
+      <input placeholder="Enter Your Name" type="text" name="name" id="name" />
+      <input
+        placeholder="Enter Your Email"
+        type="email"
+        name="email"
+        id="email"
+      />
+      <input
+        placeholder="Enter Your Password"
+        type="password"
+        name="password"
+        id="password"
+      />
+      <input type="submit" value="Login" />
+    </form>
+  </body>
+</html>
+
+6/16/2023
+
+//defining schema
+const UserSchema = new mongoose.Schema({
+    name:String,
+    email:String,
+    age:Number,
+    isMarried:Boolean
+})
+const user = new mongoose.model("user",UserSchema); //model=collection name
+//creating document
+const createCollection = async()=>{
+    const result = await user.find()
+    console.log(result);
+     
+}
+createCollection();
+
+//database connection
+
+
+MVc=-- database banuni client ma check garni and actual fucntion code contrpller ma
+M== MODEL/ SCHEMA,
+CONTROLER== CODE,
+v=client
+
+
+
+
+const productSchema = new mongoose.Schema({
+    productName:String,
+    price:Number,
+    category: String,
+    isInStock:Number,
+})
+const Product = new mongoose.model("product",productSchema);
+app.post("/api/v1/add/product",async(req, res)=>{
+    const {productName, price, category, isInStock}= req.body;
+
+    const product = await Product.create({
+        productName,
+        price,
+        category,
+        isInStock
+    });
+    res.status(201).json({
+        sucess:true,
+        message:"product created sucessfully",
+        product 
+    })
+})
+//get products
+app.get("/api/v1/products",async(req,res)=>{
+    const products = await Product.find();
+    res.status(200).json({
+        sucess:true,
+        message:"produc get sucessfully",
+        products,
+    });
+});
+
+//update product
+app.put("/api/v1/update/product/:id",async(req,res)=>{
+    let product = await Product.findById(req.params.id)
+    if (!product) return res.status(404).json({
+        sucess:false,
+        message:"product not find"
+    })
+    product= await Product.findByIdAndUpdate(req.params.id, req.body,{new:true})
+    res.status(200).json({
+        sucess:true,
+        message:"product update",
+        product
+    })
+
+})
+app.delete("/api/v1/delete/product/:id",async(req,res)=>{
+   const product = await Product.deleteOne({_id:req.params.id})
+   if(!product) return res.status(404).json({
+    sucess:false,
+    message:"product not found"
+   })
+
+   res.status(200).json({
+    sucess:true,
+    message:"product found"
+   })
+
+})
+  
+
+//one dark pro
+//npm i multer 
+
+//controllents 
+import Product from "../model/productModel.js";
+
+export const createProduct = async(req,res)=>{
+    const {productName, description, price, category, isInStock}=req.body;
+    try {
+        const product = await Product.create({
+            productName,
+            description,
+            price,
+            category,
+            isInStock
+        });
+    
+        res.status(201).json({
+            sucess:true,
+            message:"prodcut create sucessfully",
+            product
+        })
+    } catch (error) {
+        return res.status(500).json({
+            success:false,
+            message:error.message
+        })
+        
+    }
+}
+
+//get all product
+export const getProducts = async(req,res)=>{
+    try {
+        const products = await Product.find()
+    res.status(200).json({
+        success:true,
+        message:"product get sucessfully",
+        products,
+    })
+    } catch (error) {
+        return res.status(500).json({
+            success:false,
+            message:error.message
+        })
+        
+    }
+}
+
+//update  product
+export const updateProduct = async(req,res)=>{
+    try {
+        let product = await Product.findById(req.params.id)
+        if(!product) return res.status(404).json({
+            success:false,
+            message:"product not found"
+        })
+
+
+
+
+
+
+
+
+
+
+    await Product.findByIdAndUpdate(req.params.id, req.body,{new:true,}) // new true returs updated doc
+    res.status(200).json({
+        success: true,
+        message:"product update sucessfully",
+        product, 
+    })
+    } catch (error) {
+        return res.status(500).json({
+            success:false,
+            message:error.message
+        })
+        
+    }
+}
+
+//delete product
+export const deleteProduct = async(req,res)=>{
+   try {
+    const product = await Product.deleteOne({_id:req.params.id})
+    res.status(200).json({
+        success:true,
+        message:"product delete sucessfully",
+        
+    })
+   } catch (error) {
+    return res.status(500).json({
+        success:false,
+        message:error.message
+    })
+    
+   }
+}
+
+
+
+///we use jsonwebToken for authorization and authentication(login)...jwt
+
+//glo
+productName: {$regex : this.queryStr.keyword,options:"i"},
+i= case insenstive
+... = spread operator (object merge,expand)
+
+as in js everythings is object so object pass----- refrence through
+
+//react js
+--it's all about componet based arch.
+--componet can be reused so save time, less coding, single page application
+--no loading and refreshing
+--**virtual dom
+--for dyanamic and large  scale
+
+//vite -- building tools --aims to provide fasr.......
+HRM -- hot module replacement
+
+virtual dom--- lightweight representation of actual dom
+--two dom create --- one dom workd on change and update ---next dom sanga compare then balla change garxa specific part 
+
+react js
+copy1                                                                       copy2
+dom1<----------------------------------------------------------------------dom2
+
+render---show garnuuuu
+it's method of react ()what to show,where to show----
+
+
+//babel and webpack
+  babel            
+       --js compiler 
+       --advance js code lai browser understand code
+       --is in built
+
+  webpack
+  --stands for 
+  --command of line used to create a bundle of assets
+  --used to transfer all into one large file    
+
+
+  difff between .js vs .jsx
+
+  --both extension
+
+  jsx---javascript extension (xml)
+  //html like systnax but not html file
+  tag= element here in react
+  raect is case senstive all need to be in small letter
+  react ma only one element return hunxa
+
+
+  //how to return  multiple componets
+
+  --using array
+  return [<h1>hello world</h1> ,<p>this is paragraph </p>];
+  --using division
+  return <div><h1>hello world</h1> <p>this is paragraph </p></div>;
+  --using react fragment
+  return <><h1>hello world</h1> <p>this is paragraph </p></>;
+
+jsx expression----- operands + operator
+js inside jsx----- {}  eggg:[
+function App() {
+  const fullName = "Parul Maharjan"
+  return <><h1>My name is:{fullName}</h1> 
+  <p>The sum of two number is : {3+3} </p></>;
+}]
+jsx attributes class///--- className for///-htmlfor  href///link
+
+<input></input>X  [<input/>]
+<img></img>[<img src =/>]
+
+
+
+convention in reactjs----3 common naming convention
+1-- camelCase--- componet ko file ko lagi
+eg:myName;
+
+2-- pascal --- making componet [1st letter capital]
+eg: Home.jsx , About.jsx , Service.jsx
+
+3-- kebab --- - paxi capital 
+eg:text-Align, text-Trasnform:super
+
+
+
+componet in react js
+--independent reusable pieces code use for building userInterface
+--its like fucntion but is more powerful than fucntion
+
+***diff between class componet ---  A componet that has es6 class with internal state and life cycle 
+method with powerful features and complex but more powerfulthan fucntional 
+and fucntional componet--- simple js fucntion which takes props(properties) as
+ parameter and  return jsx elements -- stateless componet
+
+internal/inline class=== [key: "value"]
+///**
+function App() {
+  const myCss = {color:"white", backgroundColor: "red"}
+  
+  return (
+    <>
+      <h1 className="hello" style={myCss}>Hello world!</h1>
+      <input type="text"/>
+    </>
+  );
+}
+*///
+type ... for 
+rcc -- class componet
+racfe -- functional componet
+
+componet reuse ----[componet lai arko componet ma use garna we make it element]
+//////////////////////////////const App = () => {
+  return (
+    <>
+      <h1>Hello world</h1>
+      <MyFunc/>
+      <MyFunc/>
+      <MyFunc/>
+      <MyFunc/>
+
+    </>
+  );
+};
+const MyFunc = ()=>{
+  return(<>
+  <p>this is my another componet</p>
+  </>);
+};
+///////////////////////////////////////
+
+props:() to pass data from one componet to another (from parent comp to child comp, it read-only componets , immutable, properities of na   , uniderecetional)
+
+
+
+ES6 =es2015
+ES6 module import export in reactjs---exporting componets, functions....
+
+
+this is how we import and export 
+/* 
+-----------export--------
+const Hero= "Rajesh Hamal";
+export const PM = "Prachanda";
+const Sum = ()=>{
+    return 6+8;
+};
+const Mul =()=>{
+    return 8*4;
+}
+
+const Sub =()=>{
+    return 8-4;
+}
+export default Hero;
+//export  {PM};
+export const Greetings=()=>{
+    let fName="Parul"
+    let result = `Hello everyone this is ${fName}`;
+    return result;
+}
+export {Sum};
+export {Sub,Mul};
+
+
+
+-----import--------------
+import React from "react";
+import Hero from "./Home";
+import { PM , Sum, Sub,Mul, Greetings} from "./Home";
+const App = () => {
+  return (
+    <>
+      <h1>{Hero}</h1>
+      <h1>{PM}</h1>
+      <h1>the sum is {Sum()}</h1>
+      <h1>the Diff is {Sub()}</h1>
+      <h1>the product is {Mul()}</h1>
+      <h1>{Greetings()}</h1>
+
+
+
+
+      
+
+    </>
+  );
+};
+const MyFunc = (props)=>{
+  return(<>
+  <p>{props.title}</p>
+  </>);
+};
+export default App;
+
+*/
+//props types in React js
+-- to ensure that the oassed value is of correct data type
+age="21" x
+age = 21
+
+
+// <React.StrictMode>
+-- 2 patak rnder hunxa and error tapaunna
+
+
+//pro obj waay---deconstructor banayera
+
+const Home = ({newObj}) => {
+  const {name, age,gender}= newObj
+  //console.log(props);
+  return (
+    <>
+      <h1 className="text-blue-500 text -3xl text-center text-transform: capitalize">
+        {name}
+      </h1>{" "}
+    </>
+  );
+};
+
+
+---deconstructor nabanai
+
+//high order componet (HOC)
+---comp that takes comp as parameter  and return comp with adding extra functionalities
+
+
+
+
+
+//routing kina chainxa--ui ajai lai easy parna
+//react routing garna=install react-router-dom
+---3 componet in this package
+1.browserrouter as router---url change garna browser kam garxa like /parulVideo
+2.routes---url match vayena vani it wont render componet match vayo vanni render garxa like 
+url ma signup ko thau login diyo vani XXX
+---two props 
+3.route---multiple route
+
+imp featuresof its:
+1.NavLink, Link and hrefbin rect in js
+kina anchor tag usebbagarenjko???---page refresj
+reload gardaina page regfresh
+for navingation in react application
+
+
+navlink vs link------ almost same but highlight garna navlink(active class Name)
+link ko just navigation garney power matra hunxa
+1.headr and footer ma use navlink
+2.baki body ma link
+
+hooks******imp
+
+//customer support
+//relaiable online platform
+//we do belive in quality products
+//we do security payment method
+//shipping  and return policy
+//delivery
+// option price comparison
+//rewards program
+//justify between
+
+
+//nested route
+parent route vitra arko route define garney vaye its called nested route
+
+functional componet donot have its own life cycle and state so we to use them we use  hook
+//hook-- built in special function (--after v17--) state built garna use garney built ub 
+useState ===powerful type of hook--its a hook used in fc--built-in-special
+--return two arrayofan elemeent---array currentValue==defult value array function==used to update currentValue
+
+systnax
+const[data,setdata]=useState9
+
+state=--built in react obj that represnt data and info ---aslo called info holder of our componet
+s---stores any variqble --componet lai dynamic banauxa
+//onlick handle
+const Home = () => {
+  const [data,setData]=useState("Ram");
+  const handleClick=()=>{
+    setData("sita");
+
+  }
+  return (
+    <>
+      <h1>
+        {data}
+        <button onClick={handleClick} 
+        className="bg-red-700 ">Update</button>
+        </h1>
+    </>
+  );
+};
+
+//is ta flat arrow fun use gara or 
+return (
+    <>
+      <h1>
+        {data}
+        <button onClick={ ()=>setData(data + 1)} 
+        className="bg-red-700 text-white">Update</button>
+        </h1>
+    </>
+  );
+};
+/////
+
+const Home = () => {
+  const [data,setData]=useState(0);
+  const handleClick=()=>{
+    setData(data + 1);
+
+  }
+  return (
+    <>
+      <h1>
+        {data}
+        <button onClick={handleClick} 
+        className="bg-red-700 text-white">Update</button>
+        </h1>
+    </>
+  );
+};
+
+//controled and uncontrolled componets
+--form ko value lai state ley control garxa vaye its controlled else dom use garxa vaye uC
+
+---UseRef: dom ma convert garxa so app slow huni vayera hamle use gardanam 
+
+
+  <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d14138.62008762118!2d85.31868998830599!3d27.63519907948029!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39eb176b47f72e53%3A0x5075fb8e3638c5d7!2sDhapakhel%2C%20Lalitpur%2044700!5e0!3m2!1sen!2snp!4v1689848030889!5m2!1sen!2snp"
+         width="100%"
+         height="515"
+          style={{border:0}} 
+          allowfullscreen=""
+           loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"></iframe>
+LifeCycle Method in react js
+that cana execute in---
+ mount--(componetdidMount),---added to the dom 
+update(componetdidUpdate),---state and props update vayo vani this is called
+unmount (componetwillUnmount)---state and props remove vayeko case ma....
+
+#useEffect hook---- life cycle method ko 3 ta kura aklai kam garxa....---to fetch api
+
+//api fetch
+import React, { useEffect, useState } from "react";
+import "./Home.css";
+const Home = () => {
+  const [data,setData]= useState(0);
+
+  useEffect(()=>{
+    const URL= "https://official-joke-api.appspot.com/random_joke"
+    fetch(URL).then((res)=>console.log(res));
+  },[]);
+  return <>
+  
+  
+  </>;
+
+};
+
+export default Home;
+
+num.map((n) => n * 2)
+
+
+const myarr=[2,3,4,5,6]
+myarr.map((n)=>n*2)
+
+
+//clean up function---- 
+
+const [count,setcount]=useState(0);
+  useEffect(()=>{
+    console.log("use effect runs")
+   const intervalId= setInterval(()=>{
+      setcount((prev)=> prev +1);
+    },1000)
+    return()=>{
+      clearInterval(intervalId);
+      console.log("unmounts");
+    }
+    
+  },[])
+  return (<>
+  <h1>{count}</h1>
+  {/* //<div className=" "><BannerPage /></div> */}
+  
+  
+  </>); 
+
+
+  //useNavigate()
+
+  const [count,setcount]=useState(0);
+  const navigate= useNavigate();
+
+  useEffect(()=>{
+    console.log("use effect runs")
+   const intervalId= setInterval(()=>{
+      setcount((prev)=> prev +1);
+    },1000)
+    return()=>{
+      clearInterval(intervalId);
+      console.log("unmounts");
+    }
+    
+  },[]);
+
+  useEffect(()=>{
+    if(count ===5){
+      navigate("/about")
+    }
+  },[count, navigate]);
+
+jaile api fetch garda dont forget to clean up a runction
+
+useEffect(() => {
+    console.log("useEffect runs!");
+    const url = "http://jsonplaceholder.typicode.com/posts";
+    const controller = new AbortController();
+    const { signal } = controller;
+    const fetchedData = async () => {
+      try {
+        const res = await fetch(url, { signal });
+        const data = await res.json();
+        setMyData(data);
+      } catch (error) {
+        if (error.name === "AbortError") {
+          console.log("request aborted!");
+        } else {
+          console.log(error);
+        }
+      }
+    };
+    fetchedData();
+    return () => {
+      controller.abort();
+    };
+  }, []);
+
+
+
+//abortController
+
+
+
+//pure componets--only renders when its prop or state chnage
+useMemo--- hooks used to make componet pure--value matra return garthyp(memoized value)
+but fun nai return garney vaye we use useCallBack  (memoized fun)
+
+dubai ko kam to enhance performance of react app
+
+
+funn pass vaxa componet ma vaye we have to sue useCallBack
+//condionaal render in react js
+---jsxxx ma if else for haru use garna mildainan ternanry operator usue garney
+
+import React, { useState } from "react";
+import "./Home.css";
+import BannerPage from "./banner/BannerPage";
+
+const Home = () => {
+  const [LoggedInFirst, setLoggedInFirst] = useState(false);
+  return (
+    <>
+      {LoggedInFirst ? (
+        <div>
+          <h1>Welcome user</h1>
+          <button onClick={() => setLoggedInFirst(false)}>Logout</button>
+        </div>
+      ) : (
+        <div>
+          <h1>Please login 1st </h1>
+          <button onClick={() => setLoggedInFirst(true)}>LogIn</button>
+        </div>
+      )}
+
+      {/* <div className=" "><BannerPage /></div> */}
+    </>
+  );
+};
+
+export default Home;
+
+//useContext
+ 
+react ma indirectional way ma data flow hunxa like parent to child
+
+props drilling--- is the term use by react is a situation sending data 
+ram-gita-sita-hari
+ram-hari direct garnu xa vani tesko lagi naya concept state managing(process of controlling state of yuou componey)
+useContext ho yo garna miley chainxa
+useContext-contentAPI
+or
+arko 3rd party library Redux--js library--js /*state  managemnet library ---provider(delivery guy jastai ) 
+useContext babrambar context garna parxa
+=--small ko lagi matra
+//how redux works
+--follws specific pattern
+--provide centralizd store to manage react app---sabai state ko data haru tya hunxa
+store bata componets ma lagna we have to do it through subscriptions
+componet cannot update data of store but it have capabilities to call actions  ...
+reduces general fun--- which have power to update state
+
+is redux and react-redux same?---no 
+redux---js library,
+ react-redux---react ko library
+---redux bata no hunxa but react redux bata ajai huhnxa
+when we install react-redux we get ..
+---useSelector//react-redux hooks
+  ---to access te store of all state---special function
+---useDispatch//react-redux hooks
+  --- componet ko action trigger/// function araunu
+
+---provider//react-redux componets
+  ---whole react app ma data lai transfer garney kam garxa
+  ---pass data from store or react app
+
+Redux-toolkit
+---to make everything more easy we use redux toolkit.
+---createSlice  ---reducers,action,state haru banauna milxa
+---createAsyncThunk//takes two argument
+1.actionstring 2.async
+=--configurestore ---It make store inreact app
+  builder another alternative of switch case
+
+---redux use garda thunk middleware mkina se garxa....
+--to handle async operation-- res lai wait garauna kam garxa
+
+
+
+
+
+
+//event in react
+event in camelCase
+like onChange, onClick, onMouseHover
+
+jsx return gardaina vani pascal ma lekhna pardaina
+
+
+//use context use gareko way 
+context folder in src
+context.js file
+then /*
+import react, { createContext } from "react";
+
+const MyContext= createContext() 
+
+export default MyContext;
+/*
+
+tthen main ma
+/*
+import MyContext from "./context/Context.js";
+const sharedData = "hey use redux"
+ReactDOM.createRoot(document.getElementById("root")).render(
+  <React.StrictMode>
+    <MyContext.Provider value={sharedData}>
+    <App /></MyContext.Provider>
+  </React.StrictMode>
+);*/
+
+
+then aba ready to use in other componet directly
+import  MyContext from "../../context/Context"
+const Home = () => {
+  const sharedData = useContext(MyContext)
+  return<> {sharedData} </>
+  }
+
+
+
+  Axios--lightweighpackage http request handle---json ma convetr garnu parena 
+
+  cors--cross origin resource sharing--cross origin policy vaney kura hunxa
+  //security mechanism i n modern way
+
+react ma state directly change /mute garna mildainan
+1st ma state lai clone garna parxa then obj banayera playload garni ho.. tara 
+react toolkita matesto garna pardaina it usees immer library
+
+ api fetch garda chai use extra reducers
+direct action trigger garda use simply reducers
+...spread operator
+const a =[2,3,4,5,6]
+const b=[7,5,4,4,4]
+
+
+
+InterCeptors in reactjs
+//multipart form data
+
+ <p className="mt-2.5 ml-4 mr-0.5">
+            {user ?(<span>{user.fullName}</span>):(
+              <NavLink
+                to="/login "
+                //className="text-black hover:text-blue-700 no-underline"
+                style={{ textDecoration: "none", color: "black" }}
+                className="hover-blue"
+              >
+                Login/Register
+              </NavLink>
+           )}
+            </p>
+
+
+
+
+
+
+            import React from 'react'
+import Spinner from "react-bootstrap/esm/Spinner";
+
+
+const ChangePassword = () => {
+  return (
+   <>
+     <div className="bg">
+      <div className="max-w-md mx-auto mt-8 p-4  mb-3 shadow-md rounded-md">
+        <h2 className="text-2xl font-semibold mb-4">Change Password</h2>
+        <form >
+          <div className="mb-4">
+            <label
+              htmlFor="oldPassword"
+              className="block text-sm font-medium text-gray-700"
+            >
+             old Password
+            </label>
+            <input
+              type="password"
+              id="oldPassword"
+              name="oldPassword"
+              className="mt-1 px-4 py-2 border border-gray-300 rounded-md w-full focus:ring-indigo-500 focus:border-indigo-500"
+             
+            />
+          
+            
+          </div>
+         
+          <div className="mb-4">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-700"
+            >
+              New Password
+            </label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              className="mt-1 px-4 py-2 border border-gray-300 rounded-md w-full focus:ring-indigo-500 focus:border-indigo-500"
+              
+            />
+         
+             </div>
+          <div className="mb-4">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Confirm Password
+            </label>
+            <input
+              type="password"
+              id="confirmPassword"
+              name="confirmPassword"
+              className="mt-1 px-4 py-2 border border-gray-300 rounded-md w-full focus:ring-indigo-500 focus:border-indigo-500"
+             
+            />
+           </div>
+          <div className="mt-4">
+            <button
+              type="submit"
+              className="py-2 px-4 bg-indigo-600 text-white rounded-mdcfocus:outline-none focus:ring-2 focus:ring-indigo-500"
+            >
+              Save
+            </button>
+            
+          </div>
+        </form>
+      </div>
+    </div>
+   </>
+  )
+}
+
+export default ChangePassword
+
+
+//store 
